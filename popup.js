@@ -98,7 +98,7 @@ const S = {
   courseId: null,        // 과목 상세를 보고 있으면 id
   courseTab: "notices",  // notices | assignments | files
   asgView: "list",       // list | calendar
-  asgFilter: "todo",     // todo | all | past
+  asgFilter: "todo",     // todo | past
   calMonth: null,        // {y, m}
   calDay: null,          // KST dayNo
   noticePage: 0,
@@ -395,9 +395,8 @@ function viewAssignments() {
   const f = (id, label) => `<button class="filter ${S.asgFilter === id ? "on" : ""}" data-act="asg-filter" data-id="${id}">${S.asgFilter === id ? icon("check", "sm") : ""}${label}</button>`;
   let list;
   if (S.asgFilter === "todo") list = upcoming(all).filter((a) => !a.submitted);
-  else if (S.asgFilter === "all") list = upcoming(all);
   else list = all.filter((a) => a.dueAt && Date.parse(a.dueAt) < Date.now()).sort(byDue).reverse();
-  const body = `<div class="filters">${f("todo", "미제출")}${f("all", "다가오는 전체")}${f("past", "지난 과제")}</div>
+  const body = `<div class="filters">${f("todo", "미제출")}${f("past", "지난 과제")}</div>
     ${list.length ? `<div class="stack">${list.map((a) => asgCard(a)).join("")}</div>`
       : emptyState("check", S.asgFilter === "todo" ? "남은 과제가 없습니다" : "과제가 없습니다")}`;
   return { tabs, body };
