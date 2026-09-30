@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "금오 LMS 알리미",
+  "version": "0.3.0",
+  "description": "금오 LMS를 열면 바로 Canvas로 이동하고 LMS 로그인을 유지합니다. 과제·공지·강의자료를 모아 보여주고 새 소식을 알려줍니다. Canvas에 로그인되어 있으면 API 키를 자동 발급합니다.",
+  "permissions": [
+    "alarms",
+    "notifications",
+    "storage",
+    "downloads",
+    "cookies",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "https://canvas.kumoh.ac.kr/*",
+    "https://lms.kumoh.ac.kr/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://lms.kumoh.ac.kr/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "root_to_ko",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "action": {
+    "default_title": "금오 LMS",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "assets/icon16.png",
+      "48": "assets/icon48.png",
+      "128": "assets/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icon16.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  }
+}

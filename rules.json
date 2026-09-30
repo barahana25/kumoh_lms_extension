@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "redirect",
+      "redirect": { "url": "https://lms.kumoh.ac.kr/ko" }
+    },
+    "condition": {
+      "regexFilter": "^https://lms\\.kumoh\\.ac\\.kr/?$",
+      "resourceTypes": ["main_frame"]
+    }
+  }
+]
