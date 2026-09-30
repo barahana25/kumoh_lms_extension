@@ -121,4 +121,6 @@ https://lms.kumoh.ac.kr/* — 금오공대 LMS 포털입니다. 콘텐츠 스크
 
 ## 개인정보처리방침 URL
 
-https://github.com/barahana25/kumoh_lms_extension/blob/main/privacy-policy.md
+https://barahana25.github.io/kumoh_lms_extension/privacy-policy
+
+(GitHub Pages로 privacy-policy.md를 보여주는 주소입니다. 저장소 파일 주소 https://github.com/barahana25/kumoh_lms_extension/blob/main/privacy-policy.md 도 같은 내용입니다.)
