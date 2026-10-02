@@ -106,7 +106,7 @@
     },
     runtime: {
       sendMessage: async () => ({ ok: true }),
-      getManifest: () => ({ version: "0.3.0" })
+      getManifest: () => ({ version: "0.3.1" })
     },
     tabs: { create() {} }
   };

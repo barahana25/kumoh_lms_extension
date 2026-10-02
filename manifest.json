@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "금오 LMS 알리미",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "금오 LMS를 열면 바로 Canvas로 이동하고 LMS 로그인을 유지합니다. 과제·공지·강의자료를 모아 보여주고 새 소식을 알려줍니다. Canvas에 로그인되어 있으면 API 키를 자동 발급합니다.",
   "permissions": [
     "alarms",

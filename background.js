@@ -955,7 +955,9 @@ async function lmsReissue(access, refresh) {
   const data = body && body.data;
   if (res.status !== 200 || !data || !data.accessToken || !data.refreshToken) {
     const code = body && body.code ? ` ${body.code}` : "";
-    throw new Error(`재발급 실패 (${res.status}${code})`);
+    const err = new Error(`재발급 실패 (${res.status}${code})`);
+    err.status = res.status;
+    throw err;
   }
   return { access: data.accessToken, refresh: data.refreshToken };
 }
@@ -970,6 +972,14 @@ async function broadcastLmsTokens(tokens) {
 }
 
 // accessToken이 곧 만료되면 재발급해 쿠키와 열린 LMS 탭에 넣는다.
+// 서버가 401로 거절한 refreshToken. 다른 곳에서 더 새 토큰이 발급됐거나(T001)
+// 만료돼서 다시는 통하지 않으므로, 쿠키에 이 토큰이 남아 있는 동안은 재발급을
+// 시도하지 않는다. 사용자가 다시 로그인하면 쿠키의 토큰이 바뀌어 자동으로 재개된다.
+// storage.session은 메모리에만 있어 디스크에 남지 않고, 서비스 워커가 다시 떠도 유지된다.
+const LMS_DEAD_KEY = "lmsDeadRefreshToken";
+const isDeadRefresh = async (refresh) =>
+  (await chrome.storage.session.get({ [LMS_DEAD_KEY]: "" }))[LMS_DEAD_KEY] === refresh;
+
 async function lmsKeepAlive() {
   if (!(await lmsKeepEnabled())) return false;
   const [accessCookie, refreshCookie] = await Promise.all([
@@ -986,6 +996,7 @@ async function lmsKeepAlive() {
   const refreshExp = jwtExp(refresh);
   if (refreshExp && refreshExp <= now) return false;
   if (accessExp && accessExp - now > LMS_RENEW_BEFORE_MS) return true;
+  if (await isDeadRefresh(refresh)) return false;
 
   try {
     const next = await lmsReissue(access, refresh);
@@ -996,7 +1007,12 @@ async function lmsKeepAlive() {
     lmsLog("연장함", `${until}까지 유효`);
     return true;
   } catch (e) {
-    lmsLog("연장 못 함", `${e.message}. 다른 기기에서 로그인했으면 LMS에서 다시 로그인해야 합니다.`);
+    if (e.status === 401) {
+      await chrome.storage.session.set({ [LMS_DEAD_KEY]: refresh });
+      lmsLog("연장 멈춤", `${e.message}. 다른 기기에서 로그인했거나 로그인이 만료됐습니다. LMS에 다시 로그인하면 자동으로 다시 연장합니다.`);
+    } else {
+      lmsLog("연장 못 함", `${e.message}. 5분 뒤 다시 시도합니다.`);
+    }
     return false;
   }
 }
